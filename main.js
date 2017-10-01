@@ -1,43 +1,64 @@
-let search = document.getElementById('searchBar');
-let searchBtn = document.getElementById('searchBtn');
-let searchResults = document.querySelector ('main');
+let search_results = document.getElementById("button");
+let recipes = document.querySelectorAll(".recipes");
+let text_input = document.getElementById('search_text');
 
-searchBtn.addEventListener('click', function(){
+// Making my search Box here
 
-    searchResults.InnerHTML = "";
+search_results.addEventListener("click", function (a) {
+  fetch(`https://recipepuppyproxy.herokuapp.com/api/?q=${text_input.value}`)
+  .then(
+    function (response) {
+      if(response.status !== 200) {
+        console.log(response.status);
+        return;
+      }
+      response.json().then(function (data) {
+        displayOne(data);
+        console.log("tori", data);
+      });
+    }
+  )
 
-    //Get Value From Search Bar//
-    let searchQUery=search.value;
-    let urlBase = 'http://recipepuppyproxy.herokuapp.com/api/?q=';
-// url  , search query //
-let urlQuery= urlBase + searchQuery
-fetch(urlQuery)
-    .then(function(response){
-      return response.json().then(function(data){
-        for (var i = 0; i < data.results.length; i++) {
-          let art = document.createElement('article');
-        if(data.results(i).thumbnail){
-          art.InnerHTML
-          `
-          <a href='${data.results[i].href}'><img src='${data.results[i].thumbnail}'/></a>
-          `
-        }else{
-          art.innerHTML+=
-          `
-          <a href='${data.results[i].href}'><img src='https://baconmockup.com/600/450'/></a>
+  .catch(function(err) {
+    console.log("Fetch Error :-S", err);
+  });
+})
 
-          `
-        }
-        art.innerHTML+=
-        `
-        <h2><a href='${data.results[i].href}'>${data.results[i].title}</a></h2>
-        <p class="ingredients">${data.results[i].ingredients}</p>
-`
-searchResults.appendChild(art);
+function displayOne(data) {
+  for (var i = 0; i < data.results.length; i++) {
+    let template = ``;
+
+    template +=
+    `
+    <img src="${data.results[i].thumbnail}">
+    <h3>${data.results[i].title}</h3>
+    <a href="${data.results[i].href}">Recipe</a>
+    `;
+    recipes[i].innerHTML = template;
   }
-})
-})
-.catch(function(error){
-  console.log("Nuts:It does not work");
-})
-  })
+}
+
+
+
+
+
+//           `
+//         }else{
+//           art.innerHTML+=
+//           `
+//           <a href='${data.results[i].href}'><img src='https://baconmockup.com/600/450'/></a>
+//
+
+
+
+//           `
+//         }
+//         art.innerHTML+=
+//         `
+//         <h2><a href='${data.results[i].href}'>${data.results[i].title}</a></h2>
+//         <p class="ingredients">${data.results[i].ingredients}</p>
+// `
+// searchResults.appendChild(art);
+//   }
+// })
+// })
